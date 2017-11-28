@@ -1,0 +1,8 @@
+Adafruit-GPIO==1.0.3
+-e git+https://github.com/adafruit/Adafruit_Python_MCP9808@71b4eba39b5345726a725904582f0f6a28f85304#egg=Adafruit_MCP9808
+Adafruit-PureIO==0.2.1
+docutils==0.14
+lockfile==0.12.2
+python-daemon==2.1.2
+RPi.GPIO==0.6.3
+spidev==3.2
