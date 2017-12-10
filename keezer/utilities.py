@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+import datetime
 import logging
+import time
 
 
 def celsius_to_fahrenheit(c):
@@ -43,3 +45,9 @@ def setup_logging(log_file_path):
     streamHandler.setFormatter(formatter)
     streamHandler.setLevel(logging.DEBUG)
     logger.addHandler(streamHandler)
+
+
+def sleep_until_next_minute():
+    t = datetime.datetime.utcnow()
+    sleep_time = 60 - (t.second + 1e-6 * t.microsecond)
+    time.sleep(sleep_time)
