@@ -15,6 +15,7 @@
 #
 import daemon
 import logging
+import signal
 import statistics
 
 from . import utilities, sensors, switches
@@ -34,6 +35,17 @@ def daemon_main():
 
     # BCM 23, physical pin 16: https://pinout.xyz/pinout/pin16_gpio23
     power_switch = switches.GPIO(name='power', pin=23)
+
+    # Save default signal handlers for chaining
+    default_signal_handlers = {}
+
+    def switches_off(signum, frame):
+        """Signal handler to turn switches off on exit."""
+        log.warning('signal handler called, signum=%r', signum)
+        power_switch.state = False
+        default_signal_handlers[signum](signum, frame)
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        default_signal_handlers[signum] = signal.signal(signum, switches_off)
 
     target_temperature_range = tuple(map(utilities.fahrenheit_to_celsius, (38, 42)))
     log.info('target_temperature_range=%r', target_temperature_range)
