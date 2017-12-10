@@ -15,43 +15,42 @@
 #
 import daemon
 import logging
-import time
+import statistics
 
-import Adafruit_MCP9808.MCP9808 as MCP9808
-
-from . import utilities
+from . import utilities, sensors, switches
 
 log = logging.getLogger(__name__)
 
 
 def daemon_main():
-  utilities.setup_logging('/var/log/keezer.log')
+    utilities.setup_logging('/var/log/keezer.log')
 
-  log.info('daemon_main')
+    log.info('daemon_main')
 
-  sensors = [
-    MCP9808.MCP9808(address=0x18+0),
-    MCP9808.MCP9808(address=0x18+1),
-  ]
+    sensors_by_name = {
+        'temp_top': sensors.temperature.Mcp9808(i2c_id=0),
+        'temp_bottom': sensors.temperature.Mcp9808(i2c_id=1),
+    }
 
-  import Adafruit_GPIO.GPIO as GPIO
-  gpio = GPIO.get_platform_gpio()
-  power_pin = 23 # BCM 23, physical pin 16: https://pinout.xyz/pinout/pin16_gpio23
-  gpio.setup(power_pin, GPIO.OUT)
-  power = False
+    # BCM 23, physical pin 16: https://pinout.xyz/pinout/pin16_gpio23
+    power_switch = switches.GPIO(name='power', pin=23)
 
-  for sensor in sensors:
-    sensor.begin()
-  for t in range(100):
-    for index, sensor in enumerate(sensors):
-      log.info('sensor[%d]=%f', index, sensor.readTempC())
+    target_temperature_range = tuple(map(utilities.fahrenheit_to_celsius, (38, 42)))
+    log.info('target_temperature_range=%r', target_temperature_range)
 
-    log.info('POWER %s', power and 'ON' or 'OFF')
-    gpio.output(power_pin, power)
-    power = not power
+    while True:
+        sensor_readings = dict([(k, s.read()) for (k, s) in sensors_by_name.items()])
+        mean_temp = statistics.mean(sensor_readings.values())
+        log.info('sensors=%r mean=%.1f', sensor_readings, mean_temp)
 
-    time.sleep(10)
+        if mean_temp < target_temperature_range[0]:
+            power_switch.state = False
+        elif mean_temp > target_temperature_range[1]:
+            power_switch.state = True
+
+        utilities.sleep_until_next_minute()
+
 
 def main():
-  with daemon.DaemonContext():
-    daemon_main()
+    with daemon.DaemonContext():
+        daemon_main()
