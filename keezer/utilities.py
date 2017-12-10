@@ -22,6 +22,11 @@ def celsius_to_fahrenheit(c):
     return c * 9.0 / 5.0 + 32.0
 
 
+def fahrenheit_to_celsius(f):
+    """Convert a Celsius temperature to Fahrenheit."""
+    return (f - 32.0) * 5.0 / 9.0
+
+
 def setup_logging(log_file_path):
     format = '%(asctime)s %(levelname)s:%(name)s %(message)s'
     formatter = logging.Formatter(format)
