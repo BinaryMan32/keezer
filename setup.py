@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from setuptools import setup, find_packages
 
-setup(name='Keezer',
+setup(
+  name='Keezer',
   version='1.0',
   description='Keezer Monitor',
   author='Fred Fettinger',

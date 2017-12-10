@@ -18,23 +18,23 @@ import logging
 
 
 def celsius_to_fahrenheit(c):
-  """Convert a Celsius temperature to Fahrenheit."""
-  return c * 9.0 / 5.0 + 32.0
+    """Convert a Celsius temperature to Fahrenheit."""
+    return c * 9.0 / 5.0 + 32.0
 
 
 def setup_logging(log_file_path):
-  format = '%(asctime)s %(levelname)s:%(name)s %(message)s'
-  formatter = logging.Formatter(format)
+    format = '%(asctime)s %(levelname)s:%(name)s %(message)s'
+    formatter = logging.Formatter(format)
 
-  logger = logging.getLogger()
-  logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
 
-  fileHandler = logging.FileHandler(log_file_path)
-  fileHandler.setFormatter(formatter)
-  fileHandler.setLevel(logging.INFO)
-  logger.addHandler(fileHandler)
+    fileHandler = logging.FileHandler(log_file_path)
+    fileHandler.setFormatter(formatter)
+    fileHandler.setLevel(logging.INFO)
+    logger.addHandler(fileHandler)
 
-  streamHandler = logging.StreamHandler()
-  streamHandler.setFormatter(formatter)
-  streamHandler.setLevel(logging.DEBUG)
-  logger.addHandler(streamHandler)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+    streamHandler.setLevel(logging.DEBUG)
+    logger.addHandler(streamHandler)
