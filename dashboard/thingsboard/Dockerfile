@@ -14,11 +14,24 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jre
+# Created based on thingsboard Dockerfile, with changes to build on a
+# Raspberry Pi. See https://thingsboard.io/docs/user-guide/install/rpi/
 
-ADD run-application.sh /run-application.sh
-ADD thingsboard.deb /thingsboard.deb
+FROM oysteinjakobsen/armv7-oracle-java8
+
+RUN apt-get update \
+        && apt-get install -y ca-certificates \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://raw.githubusercontent.com/thingsboard/thingsboard/v1.3.1/docker/tb/run-application.sh \
+         -O /run-application.sh
+
+RUN wget https://github.com/thingsboard/thingsboard/releases/download/v1.3.1/thingsboard-1.3.1.deb \
+         -O /thingsboard.deb
 
 RUN apt-get update \
         && apt-get install -y nmap \
-        && chmod +x /run-application.sh
+        && chmod +x /run-application.sh \
+        && rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_OPTS="platform=rpi -Xms256M -Xmx256M"
