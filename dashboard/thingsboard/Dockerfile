@@ -34,4 +34,4 @@ RUN apt-get update \
         && chmod +x /run-application.sh \
         && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_OPTS="platform=rpi -Xms256M -Xmx256M"
+ENV JAVA_OPTS="-Dplatform=rpi -Xms256M -Xmx256M"
