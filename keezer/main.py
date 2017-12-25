@@ -17,8 +17,9 @@ import daemon
 import logging
 import signal
 import statistics
+import time
 
-from . import utilities, sensors, switches
+from . import utilities, sensors, switches, thingsboard
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,10 @@ def daemon_main():
     target_temperature_range = tuple(map(utilities.fahrenheit_to_celsius, (38, 42)))
     log.info('target_temperature_range=%r', target_temperature_range)
 
+    thingsboard_client = thingsboard.Client('http://tb:8080/api/v1')
+
     while True:
+        timestamp = time.time()
         sensor_readings = dict([(k, s.read()) for (k, s) in sensors_by_name.items()])
         mean_temp = statistics.mean(sensor_readings.values())
         log.info('sensors=%r mean=%.1f', sensor_readings, mean_temp)
@@ -59,6 +63,12 @@ def daemon_main():
             power_switch.state = False
         elif mean_temp > target_temperature_range[1]:
             power_switch.state = True
+
+        telemetry = dict(sensor_readings.items())
+        telemetry.update(power=(1 if power_switch.state else 0))
+        thingsboard_client.update_telemetry(token='5FD8mwCgaI2gcXz0Jlif',
+                                            values=telemetry,
+                                            timestamp=timestamp)
 
         utilities.sleep_until_next_minute()
 
