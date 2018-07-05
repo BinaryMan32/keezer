@@ -66,9 +66,12 @@ def daemon_main():
 
         telemetry = dict(sensor_readings.items())
         telemetry.update(power=(1 if power_switch.state else 0))
-        thingsboard_client.update_telemetry(token='5FD8mwCgaI2gcXz0Jlif',
-                                            values=telemetry,
-                                            timestamp=timestamp)
+        try:
+            thingsboard_client.update_telemetry(token='5FD8mwCgaI2gcXz0Jlif',
+                                                values=telemetry,
+                                                timestamp=timestamp)
+        except Exception as e:
+            log.warning('Unable to save telemetry to thingsboard due to error %r', e)
 
         utilities.sleep_until_next_minute()
 
