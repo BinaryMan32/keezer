@@ -7,6 +7,7 @@ const char* wifi_pass = SET_PASSWORD_STRING;
 void wifi_setup() {
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(wifi_ssid, wifi_pass);
 }
 
