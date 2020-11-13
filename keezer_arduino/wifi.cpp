@@ -8,6 +8,7 @@ void wifi_setup() {
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
   WiFi.mode(WIFI_STA);
+  WiFi.hostname("keezer");
   WiFi.begin(wifi_ssid, wifi_pass);
 }
 
